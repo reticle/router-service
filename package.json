@@ -1,0 +1,33 @@
+{
+    "name": "router-service",
+    "version": "1.0.0",
+    "description": "",
+    "main": "dist/lib/main.js",
+    "scripts": {
+        "start": "node dist/lib/main.js",
+        "test": "./node_modules/.bin/mocha ./dist/test/*.test.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/reticle/router-service.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/reticle/router-service/issues"
+    },
+    "homepage": "https://github.com/reticle/router-service#readme",
+    "dependencies": {
+        "bunyan": "^1.8.2",
+        "restify": "^4.1.1"
+    },
+    "devDependencies": {
+        "@types/bunyan": "0.0.30",
+        "@types/mocha": "^2.2.32",
+        "@types/node": "^6.0.45",
+        "@types/restify": "^2.0.33",
+        "mocha": "^3.1.2",
+        "tslint": "^3.15.1",
+        "typescript": "^2.0.3"
+    }
+}
