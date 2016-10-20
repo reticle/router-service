@@ -2,6 +2,11 @@ import * as restify from 'restify';
 import logger from './logger';
 import settings from './settings';
 
+import CertificateCache from './certificate-cache';
+
+
+
+
 // Initialize settings.
 try {
     settings.initialize();

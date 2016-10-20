@@ -18,7 +18,9 @@
   },
   "homepage": "https://github.com/reticle/router-service#readme",
   "dependencies": {
+    "@types/node-cache": "^3.0.30",
     "bunyan": "^1.8.2",
+    "node-cache": "^4.1.0",
     "restify": "^4.1.1"
   },
   "devDependencies": {
