@@ -5,7 +5,7 @@
     "main": "dist/lib/main.js",
     "scripts": {
         "start": "node dist/lib/main.js",
-        "test": "./node_modules/.bin/mocha ./dist/test/*.test.js"
+        "test": "./node_modules/.bin/mocha ./dist/tests/*.test.js"
     },
     "repository": {
         "type": "git",

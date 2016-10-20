@@ -1,6 +1,6 @@
 node_modules/
 source/
-dist/test/
+dist/tests/
 dist/**/*.d.ts
 .git/
 coverage/
