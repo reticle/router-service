@@ -1,9 +1,19 @@
 import * as restify from 'restify';
 import logger from './logger';
+import settings from './settings';
+
+// Initialize settings.
+try {
+    settings.initialize();
+} catch (ex) {
+    logger.error(ex);
+    process.exit(1);
+}
 
 const server = restify.createServer();
 server.get('/', (req, res) => {
     res.send(200, { it: 'works' });
 });
 
-server.listen(3000, () => logger.info('router-service listening on port 3000'));
+server.listen(settings.servicePort,
+    () => logger.info(`Service listening on port ${settings.servicePort}`));
