@@ -1,11 +1,5 @@
-import * as restify from 'restify';
 import logger from './logger';
 import settings from './settings';
-
-import CertificateCache from './certificate-cache';
-
-
-
 
 // Initialize settings.
 try {
@@ -14,6 +8,10 @@ try {
     logger.error(ex);
     process.exit(1);
 }
+
+import * as restify from 'restify';
+
+import CertificateCache from './certificate-loader';
 
 const server = restify.createServer();
 server.get('/', (req, res) => {

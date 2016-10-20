@@ -4,7 +4,7 @@ import { Settings } from '../lib/settings';
 import logger from '../lib/logger';
 
 // Disable logging.
-logger.level(50);
+//logger.level(50);
 
 describe('Settings', () => {
     let settings: Settings;

@@ -1,7 +1,17 @@
 import logger from './logger';
 
-export class Settings {
+export namespace Settings {
+    export interface Options {
+        servicePort: number;
+        validDomainsTlsCacheTtl: number;
+        invalidDomainsTlsCacheTtl: number;
+    }
+}
+
+export class Settings implements Settings.Options {
     public servicePort: number = 3000;
+    public validDomainsTlsCacheTtl: number = 300;
+    public invalidDomainsTlsCacheTtl: number = 60;
 
     initialize(): void {
         // Service listening port.
