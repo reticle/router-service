@@ -20,6 +20,7 @@
   "dependencies": {
     "@types/node-cache": "^3.0.30",
     "bunyan": "^1.8.2",
+    "http-proxy": "^1.15.1",
     "node-cache": "^4.1.0",
     "restify": "^4.1.1"
   },

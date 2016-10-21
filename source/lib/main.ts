@@ -1,22 +1,27 @@
+import * as Http from 'http';
+import * as Https from 'https';
+
 import logger from './logger';
 import settings from './settings';
+import sniResolver from './sni-resolver';
+import router from './router';
+import routeResolver from './route-resolver';
 
 // Initialize settings.
 try {
     settings.initialize();
+
+    routeResolver.configure('api', 'localhost', 'apis');
+
 } catch (ex) {
     logger.error(ex);
     process.exit(1);
 }
 
-import * as restify from 'restify';
 
-import CertificateCache from './certificate-loader';
+// HTTP + HTTPS servers that will process all requests to the platform.
+const insecureServer = Http.createServer(router);
+const secureServer = Https.createServer({ SNICallback: sniResolver }, router);
 
-const server = restify.createServer();
-server.get('/', (req, res) => {
-    res.send(200, { it: 'works' });
-});
-
-server.listen(settings.servicePort,
-    () => logger.info(`Service listening on port ${settings.servicePort}`));
+insecureServer.listen(8080);
+secureServer.listen(8443);

@@ -1,4 +1,3 @@
-import * as Bunyan from 'bunyan';
 import * as NodeCache from 'node-cache';
 import * as TLS from 'tls';
 import * as FileSystem from 'fs';
@@ -6,80 +5,50 @@ import * as FileSystem from 'fs';
 import settings from './settings';
 import logger from './logger';
 
-export namespace CertificateLoader {
-    export interface Cache {
-        get(key: string): TLS.SecureContext;
-        set(key: string, value: TLS.SecureContext, ttl: number): boolean;
-    }
-
-    export interface Options {
-        logger?: Logger;
-        cache?: Cache;
-        validDomainsTlsCacheTtl?: number;
-        invalidDomainsTlsCacheTtl?: number;
-    }
-
-    export interface KeyCertificatePair {
-        key: string;
-        certificate: string;
-    }
+interface KeyCertificatePair {
+    key: string;
+    cert: string;
 }
 
-export class CertificateLoader {
+const cache = new NodeCache({ checkperiod: 60, useClones: false });
+const defaultSecureContext = createSecureContextFromFile('./keys/default.key.pem', './keys/default.cert.pem');
 
-    logger: CertificateLoader.Logger;
-    cache: CertificateLoader.Cache;
-    validDomainsTlsCacheTtl: number;
-    invalidDomainsTlsCacheTtl: number;
-    defaultSecureContext: TLS.SecureContext;
+function createSecureContextFromFile(keyPath: string, certPath: string): TLS.SecureContext {
+    return TLS.createSecureContext({
+        key: FileSystem.readFileSync(keyPath, 'utf8'),
+        cert: FileSystem.readFileSync(certPath, 'utf8')
+    });
+}
 
-    constructor(options: CertificateLoader.Options = {}) {
-        this.logger = options.logger || logger;
-        this.cache = options.cache || new NodeCache({ checkperiod: 60, useClones: false });
-        this.validDomainsTlsCacheTtl = options.validDomainsTlsCacheTtl || settings.validDomainsTlsCacheTtl;
-        this.invalidDomainsTlsCacheTtl = options.invalidDomainsTlsCacheTtl || settings.invalidDomainsTlsCacheTtl;
+async function resolve(domain: string): Promise<TLS.SecureContext> {
+    let context: TLS.SecureContext = cache.get<TLS.SecureContext>(domain);
+    if (context === undefined) {
+        // const info = await coreservice.get('/domains/name');
+        const info: KeyCertificatePair = undefined;
 
-        this.defaultSecureContext = TLS.createSecureContext({
-            key: FileSystem.readFileSync('./keys/default.key.pem', 'utf8'),
-            cert: FileSystem.readFileSync('./keys/default.cert.pem', 'utf8')
-        });
-    }
-
-    createSecureContext(pair: CertificateLoader.KeyCertificatePair): TLS.SecureContext {
-        if (!pair || !pair.key || !pair.certificate) {
-            return this.defaultSecureContext;
-        }
+        context = defaultSecureContext;
+        let ttl = settings.invalidDomainsTlsCacheTtl;
 
         try {
-            return TLS.createSecureContext({
-                key: pair.key,
-                cert: pair.certificate
-            });
+            if (info) {
+                context = TLS.createSecureContext(info);
+                ttl = settings.invalidDomainsTlsCacheTtl;
+            }
         } catch (exception) {
-            this.logger.error(exception);
-            return this.defaultSecureContext;
+            logger.error(exception);
         }
+
+        cache.set<TLS.SecureContext>(name, context, ttl);
     }
 
-    async get(domain: string): Promise<TLS.SecureContext> {
-        let context: TLS.SecureContext = this.cache.get(domain);
-        if (context === undefined) {
-            // const info = await coreservice.get('/domains/name');
-            const info: CertificateLoader.KeyCertificatePair = undefined;
+    return context;
+}
 
-            if (info) {
-                // Create and cache the context for a relatively long time.
-                context = this.createSecureContext(info);
-                this.cache.set(name, context, this.validDomainsTlsCacheTtl);
-            } else {
-                // Cache this domain name for a short time.
-                context = this.defaultSecureContext;
-                this.cache.set(name, context, this.invalidDomainsTlsCacheTtl);
-            }
-        }
-
-        return context;
+namespace resolve {
+    export function preloadFromFile(domain: string, keyPath: string, certPath: string): void {
+        const context = createSecureContextFromFile(keyPath, certPath);
+        cache.set<TLS.SecureContext>(domain, context);
     }
 }
 
-export default new CertificateLoader();
+export default resolve;
