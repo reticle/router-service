@@ -46,23 +46,29 @@ function resolve(host: string, url: string): Route {
 }
 
 namespace resolve {
-    export function configure(service: string, host: string, target: string): void {
+    export enum Services {
+        Api,
+        Renderer,
+        Portal
+    }
+
+    export function configure(service: Services, host: string, target: string): void {
         const route: Route = { service: target };
         switch (service) {
-            case 'api': {
+            case Services.Api: {
                 apiHost = host;
                 apiRoute = route;
                 break;
             }
 
-            case 'renderer': {
+            case Services.Renderer: {
                 rendererHost = host;
                 rendererRoute = route;
                 defaultTarget = target;
                 break;
             }
 
-            case 'portal': {
+            case Services.Portal: {
                 portalHost = host;
                 portalRoute = route;
                 break;

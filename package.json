@@ -22,12 +22,14 @@
     "bunyan": "^1.8.2",
     "http-proxy": "^1.15.1",
     "node-cache": "^4.1.0",
+    "pem": "^1.8.3",
     "restify": "^4.1.1"
   },
   "devDependencies": {
     "@types/bunyan": "0.0.30",
     "@types/mocha": "^2.2.32",
     "@types/node": "^6.0.45",
+    "@types/pem": "^1.8.1",
     "@types/restify": "^2.0.33",
     "@types/should": "^8.1.30",
     "mocha": "^3.1.2",

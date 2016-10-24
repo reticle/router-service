@@ -7,7 +7,7 @@ const HttpProxy = require('http-proxy');
 const keepAliveAgent = new Http.Agent({ keepAlive: true, maxSockets: 1000 });
 const proxy = HttpProxy.createProxyServer({ agent: keepAliveAgent });
 
-proxy.on('error', function (err, req, res) {
+proxy.on('error', function (err: any, req: any, res: any) {
     logger.error(err);
     res.writeHead(500, {
         'Content-Type': 'text/plain'
@@ -22,9 +22,9 @@ export default (req: Http.ServerRequest, res: Http.ServerResponse) => {
 
         const route = resolver(req.headers.host, req.url);
         if (route.url) {
-            targetUrl = `http://${route.service}/${route.url}`;
+            targetUrl = `${route.service}/${route.url}`;
         } else {
-            targetUrl = `http://${route.service}`;
+            targetUrl = route.service;
         }
 
         proxy.web(req, res, { target: targetUrl });

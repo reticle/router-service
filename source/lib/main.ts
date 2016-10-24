@@ -3,25 +3,43 @@ import * as Https from 'https';
 
 import logger from './logger';
 import settings from './settings';
+import certificateLoader from './certificate-loader';
 import sniResolver from './sni-resolver';
 import router from './router';
 import routeResolver from './route-resolver';
 
-// Initialize settings.
-try {
+async function initialize(): Promise<void> {
     settings.initialize();
 
-    routeResolver.configure('api', 'localhost', 'apis');
+    await certificateLoader.initializeDefaultCertificate();
 
-} catch (ex) {
-    logger.error(ex);
-    process.exit(1);
+    if (settings.api.keyFile) {
+        await certificateLoader.preloadFromFile(settings.api.domain, settings.api.keyFile, settings.api.certificatefile);
+    }
+
+    if (settings.renderer.keyFile) {
+        await certificateLoader.preloadFromFile(settings.renderer.domain, settings.renderer.keyFile, settings.renderer.certificatefile);
+    }
+
+    if (settings.portal.keyFile) {
+        await certificateLoader.preloadFromFile(settings.portal.domain, settings.portal.keyFile, settings.portal.certificatefile);
+    }
+
+    routeResolver.configure(routeResolver.Services.Api, settings.api.domain, settings.api.target);
+    routeResolver.configure(routeResolver.Services.Renderer, settings.renderer.domain, settings.renderer.target);
+    routeResolver.configure(routeResolver.Services.Portal, settings.portal.domain, settings.portal.target);
 }
 
 
-// HTTP + HTTPS servers that will process all requests to the platform.
-const insecureServer = Http.createServer(router);
-const secureServer = Https.createServer({ SNICallback: sniResolver }, router);
+initialize()
+    .then(() => {
+        // HTTP + HTTPS servers that will process all requests to the platform.
+        const insecureServer = Http.createServer(router);
+        const secureServer = Https.createServer({ SNICallback: sniResolver }, router);
 
-insecureServer.listen(8080);
-secureServer.listen(8443);
+        insecureServer.listen(settings.httpPort);
+        secureServer.listen(settings.httpsPort);
+    })
+    .catch((error) => {
+        logger.error(error);
+    });
