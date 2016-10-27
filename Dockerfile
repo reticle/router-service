@@ -1,4 +1,4 @@
-FROM node:6.9.0
+FROM node:7.0.0
 
 RUN useradd --user-group --shell /bin/false app && \
     mkdir /app
@@ -24,4 +24,4 @@ RUN chown -R app:app /app
 USER app
 
 # Start the application.
-CMD ["node", "dist/lib/main.js"]
+CMD ["node", "--harmony", "dist/lib/main.js"]
