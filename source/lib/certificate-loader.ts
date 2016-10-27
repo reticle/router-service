@@ -49,11 +49,16 @@ namespace resolve {
     }
 
     export async function initializeDefaultCertificate(): Promise<void> {
+        logger.info('Begin creating a new self signed certificate.');
+
         return new Promise<void>((resolve, reject) => {
-            Pem.createCertificate({ days: 365, selfSigned: true }, (err: any, keys: any) => {
-                if (err) {
-                    reject(err);
+            Pem.createCertificate({ days: 365, selfSigned: true }, (error: any, keys: any) => {
+                if (error) {
+                    logger.error('An error occurred while creating the self signed certificate.', error);
+                    reject(error);
                 } else {
+                    logger.info('Finished creating the self signed certificate.');
+
                     defaultSecureContext = TLS.createSecureContext({
                         key: keys.serviceKey,
                         cert: keys.certificate
