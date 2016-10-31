@@ -7,7 +7,7 @@ const HttpProxy = require('http-proxy');
 const keepAliveAgent = new Http.Agent({ keepAlive: true, maxSockets: 1000 });
 const proxy = HttpProxy.createProxyServer({ agent: keepAliveAgent });
 
-proxy.on('error', function (err: any, req: any, res: any) {
+proxy.on('error', function (err: any, req: any, res: any): void {
     logger.error(err);
     res.writeHead(500, {
         'Content-Type': 'text/plain'
