@@ -1,5 +1,6 @@
 node_modules/
 source/
+tests/
 dist/tests/
 dist/**/*.d.ts
 .git/

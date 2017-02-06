@@ -1,7 +1,7 @@
 import 'mocha';
 import 'should';
-import { Settings } from '../lib/settings';
-import logger from '../lib/logger';
+import { Settings } from '../source/settings';
+import logger from '../source/logger';
 
 // Disable logging.
 //logger.level(50);

@@ -1,6 +1,12 @@
 {
     "version": "0.2.0",
-    "configurations": [
+    "configurations": [{
+            "type": "node2",
+            "request": "attach",
+            "name": "Attach to Port",
+            "port": 9229,
+            "restart": true
+        },
         {
             "name": "Launch",
             "type": "node",
